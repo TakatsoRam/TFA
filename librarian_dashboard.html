@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 15px 30px;
+            margin: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h1 {
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Librarian Dashboard</h1>
+
+        <button onclick="window.location.href = 'add_book.html';">Add Book</button>
+        <button onclick="window.location.href = 'update_book.html';">Update Book</button>
+        <button onclick="window.location.href = 'remove_book.html';">Remove Book</button>
+        <button onclick="window.location.href = 'search_user.html';">Search User</button> 
+        <button onclick="window.location.href = 'issue_book.html';">Issue Book</button>
+        <button onclick="window.location.href = 'return_book.html';">Return a Book</button>
+    </div>
+</body>
+</html>
+

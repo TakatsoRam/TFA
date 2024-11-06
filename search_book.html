@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #results {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .back-btn {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #ddd;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Search for Books</h1>
+
+    <!-- Search Form -->
+    <div class="container">
+        <form id="searchBookForm">
+            <label for="searchCriteria">Search By:</label>
+            <select id="searchCriteria" name="searchCriteria">
+                <option value="title">Title</option>
+                <option value="author">Author</option>
+                <option value="isbn">ISBN</option>
+                <option value="genre">Genre</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="Enter your search term" required>
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="results"></div> <!-- To display search results -->
+
+        <!-- Back Button -->
+        <button class="back-btn" onclick="window.location.href = 'dashboard.html';">Back to Dashboard</button>
+    </div>
+
+    <script>
+        // Handle search form submission
+        document.getElementById('searchBookForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const searchCriteria = document.getElementById('searchCriteria').value;
+            const searchInput = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+
+            if (searchInput === '') {
+                resultsDiv.innerText = "Please enter a search term.";
+                return;
+            }
+
+            // Send search request to the server
+            fetch('http://localhost:3000/searchBooks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ searchCriteria, searchInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.books.length > 0) {
+                        let table = '<table><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Genre</th><th>Publication Year</th></tr>';
+                        data.books.forEach(book => {
+                            table += `
+                                <tr>
+                                    <td>${book.title}</td>
+                                    <td>${book.author}</td>
+                                    <td>${book.isbn}</td>
+                                    <td>${book.genre}</td>
+                                    <td>${book.publication_year}</td>
+                                </tr>
+                            `;
+                        });
+                        table += '</table>';
+                        resultsDiv.innerHTML = table;
+                    } else {
+                        resultsDiv.innerText = "No books found for the given search term.";
+                    }
+                } else {
+                    resultsDiv.innerText = "An error occurred while searching. Please try again.";
+                }
+            })
+            .catch(error => {
+                console.error('Search Error:', error);
+                resultsDiv.innerText = "An error occurred during the search. Please try again.";
+            });
+        });
+    </script>
+
+</body>
+</html>

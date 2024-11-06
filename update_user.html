@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update User Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        input[type="text"], input[type="email"], input[type="tel"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #ddd;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #ccc;
+        }
+
+        #message {
+            margin-top: 20px;
+            color: red;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Update Your Details</h1>
+
+    <!-- Update User Form -->
+    <div class="container">
+        <form id="updateUserForm">
+            <label for="full_name">Full Name:</label> <!-- Corrected Label -->
+            <input type="text" id="full_name" name="full_name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" required>
+
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" required>
+
+            <button type="submit">Update Details</button>
+        </form>
+
+        <div id="message"></div>
+
+        <!-- Back Button -->
+        <button class="back-btn" onclick="window.location.href = 'dashboard.html';">Back to Dashboard</button>
+    </div>
+
+    <script>
+        // Handle form submission to update user details
+        document.getElementById('updateUserForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const full_name = document.getElementById('full_name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const messageDiv = document.getElementById('message');
+
+            // Clear previous messages
+            messageDiv.innerText = '';
+
+            // Validate inputs
+            if (!full_name || !email || !phone || !address) {
+                messageDiv.innerText = "Please fill in all fields.";
+                return;
+            }
+
+            // Send update request to the server
+            fetch('http://localhost:3000/updateUser', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ full_name, email, phone, address })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.innerText = "Your details have been updated successfully!";
+                    messageDiv.style.color = "green";
+                } else {
+                    messageDiv.innerText = data.message || "Failed to update your details. Please try again.";
+                }
+            })
+            .catch(error => {
+                console.error('Update Error:', error);
+                messageDiv.innerText = "An error occurred while updating your details.";
+            });
+        });
+    </script>
+
+</body>
+</html>

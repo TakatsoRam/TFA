@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            background-color: #ddd;
+            color: black;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Issue a Book</h1>
+    <form id="issueBookForm">
+        <label for="book_id">Book ID:</label>
+        <input type="text" id="book_id" name="book_id" required>
+
+        <label for="user_id">User ID:</label>
+        <input type="text" id="user_id" name="user_id" required>
+
+        <label for="due_date">Due Date:</label>
+        <input type="date" id="due_date" name="due_date" required>
+
+        <button type="submit">Issue Book</button>
+    </form>
+    <div id="message"></div>
+
+    <button class="back-btn" onclick="window.location.href = 'librarian_dashboard.html';">Back to Dashboard</button>
+
+    <script>
+        // Handle form submission for issuing a book
+        document.getElementById('issueBookForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const book_id = document.getElementById('book_id').value;
+            const user_id = document.getElementById('user_id').value;
+            const due_date = document.getElementById('due_date').value;
+            const messageDiv = document.getElementById('message');
+
+            // Send the data to the server
+            fetch('http://localhost:3000/issueBook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ book_id, user_id, due_date })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.innerText = "Book issued successfully!";
+                    messageDiv.style.color = "green";
+                } else {
+                    messageDiv.innerText = "Failed to issue book. " + data.message;
+                    messageDiv.style.color = "red";
+                }
+            })
+            .catch(error => {
+                console.error('Error issuing book:', error);
+                messageDiv.innerText = "An error occurred while issuing the book.";
+                messageDiv.style.color = "red";
+            });
+        });
+    </script>
+</body>
+</html>

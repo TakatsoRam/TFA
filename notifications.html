@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notifications</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due Date</th>
+                <th>Overdue Days</th>
+                <th>Fine (R)</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="notificationsTable">
+    
+        </tbody>
+    </table>
+
+    <button onclick="window.location.href = 'dashboard.html';">Back to Dashboard</button>
+
+    <script>
+        // Fetch notifications data from the server
+        fetch('http://localhost:3000/notifications')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const notificationsTable = document.getElementById('notificationsTable');
+                    data.notifications.forEach(notification => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${notification.title}</td>
+                            <td>${notification.due_date}</td>
+                            <td>${notification.overdue_days || 'N/A'}</td>
+                            <td>${notification.fine}</td>
+                            <td>${notification.status === 'overdue' ? 'Overdue' : 'Due Soon'}</td>
+                        `;
+                        notificationsTable.appendChild(row);
+                    });
+                } else {
+                    alert('Failed to load notifications.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+            });
+    </script>
+</body>
+</html>

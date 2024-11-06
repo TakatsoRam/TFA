@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h1 {
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="welcomeMessage">Welcome!</h1>
+
+        <button onclick="window.location.href = 'search_book.html';">Search Book</button>
+        <button onclick="window.location.href = 'update_user.html';">Update Details</button>
+        <button onclick="window.location.href = 'renew_book.html';">Renew a Book</button> 
+        <button onclick="window.location.href = 'notifications.html';">Notifications</button>
+        <button onclick="window.location.href = 'request_book.html';">Request a Book</button>
+        <button id="logoutButton">Logout</button>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            fetch('http://localhost:3000/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('message').innerText = "Logged out successfully!";
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                } else {
+                    document.getElementById('message').innerText = "Logout failed!";
+                }
+            })
+            .catch(error => {
+                console.error('Logout Error:', error);
+                document.getElementById('message').innerText = "An error occurred while logging out.";
+            });
+        });
+
+       
+        fetch('http://localhost:3000/getUserInfo')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('welcomeMessage').innerText = `Welcome, ${data.user.email}!`;
+            } else {
+                window.location.href = 'login.html'; // Redirecting to login if not logged in
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user info:', error);
+            window.location.href = 'login.html'; // Redirect to login on error
+        });
+    </script>
+</body>
+</html>

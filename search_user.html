@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #results {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .back-btn {
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #ddd;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Search for Users</h1>
+
+    <!-- Search Form -->
+    <div class="container">
+        <form id="searchUserForm">
+            <label for="searchCriteria">Search By:</label>
+            <select id="searchCriteria" name="searchCriteria">
+                <option value="name">Name</option>
+                <option value="user_id">User ID</option>
+                <option value="email">Email</option>
+                <option value="phone_number">Phone Number</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="Enter your search term" required>
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="results"></div> <!-- To display search results -->
+
+        <!-- Back Button -->
+        <button class="back-btn" onclick="window.location.href = 'librarian_dashboard.html';">Back to Dashboard</button>
+    </div>
+
+    <script>
+        // Handle search form submission
+        document.getElementById('searchUserForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const searchCriteria = document.getElementById('searchCriteria').value;
+            const searchInput = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+
+            if (searchInput === '') {
+                resultsDiv.innerText = "Please enter a search term.";
+                return;
+            }
+
+            // Send search request to the server
+            fetch('http://localhost:3000/searchUsers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ searchCriteria, searchInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.users.length > 0) {
+                        let table = '<table><tr><th>User ID</th><th>Full Name</th><th>Email</th><th>Phone Number</th><th>Address</th></tr>';
+                        data.users.forEach(user => {
+                            table += `
+                                <tr>
+                                    <td>${user.user_id}</td>
+                                    <td>${user.full_name}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.phone_number}</td>
+                                    <td>${user.address}</td>
+                                </tr>
+                            `;
+                        });
+                        table += '</table>';
+                        resultsDiv.innerHTML = table;
+                    } else {
+                        resultsDiv.innerText = "No users found for the given search term.";
+                    }
+                } else {
+                    resultsDiv.innerText = "An error occurred while searching. Please try again.";
+                }
+            })
+            .catch(error => {
+                console.error('Search Error:', error);
+                resultsDiv.innerText = "An error occurred during the search. Please try again.";
+            });
+        });
+    </script>
+
+</body>
+</html>

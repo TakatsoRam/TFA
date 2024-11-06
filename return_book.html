@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Return a Book</h1>
+    
+    <form id="returnBookForm">
+        <label for="book_id">Book ID:</label>
+        <input type="text" id="book_id" name="book_id" placeholder="Enter Book ID" required>
+
+        <button type="submit">Return Book</button>
+    </form>
+
+    <div id="message"></div>
+
+    <button onclick="window.location.href = 'librarian_dashboard.html';">Back to Dashboard</button>
+
+    <script>
+        document.getElementById('returnBookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const bookId = document.getElementById('book_id').value.trim();
+
+            fetch('http://localhost:3000/returnBook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ book_id: bookId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('message').innerText = "Book returned successfully!";
+                } else {
+                    document.getElementById('message').innerText = data.message || "Failed to return book.";
+                }
+            })
+            .catch(error => {
+                console.error('Return Book Error:', error);
+                document.getElementById('message').innerText = "An error occurred while returning the book.";
+            });
+        });
+    </script>
+</body>
+</html>
